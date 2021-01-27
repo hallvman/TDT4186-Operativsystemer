@@ -2,9 +2,8 @@
 #include <string.h>
 
 int c = 5;
-//int sum = 1;
-int d = 5910968;
-int e = 5910969;
+int d = 5910968; //Last correct number
+int e = 5910969; //First incorrect number
 
 int sum_n(int n){
 	int sum = 1;
