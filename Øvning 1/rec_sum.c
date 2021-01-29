@@ -4,11 +4,11 @@
 int c = 5;
 int sum = 1;
 
-int sum_n(int n){
-	for(int i = 2; i <= n; i++){
-		sum += i;
-	}
-return sum;
+int sum_n(int n){	
+	if(n != 0)
+		return n + sum_n(n-1);
+	else
+		return n;
 }
 
 int main(void){
