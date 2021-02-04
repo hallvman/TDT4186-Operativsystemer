@@ -2,15 +2,13 @@
 #include <string.h>
 
 int c = 5;
-int d = 5910968; //Last correct number
-int e = 5910969; //First incorrect number
+int d = 65536; //Last correct number
 
-int sum_n(int n){
-	int sum = 1;
-	for(int i = 2; i <= n; i++){
-		sum += i;
-	}
-return sum;
+int sum_n(int n){	
+	if(n != 0)
+		return n + sum_n(n-1);
+	else
+		return n;
 }
 
 int main(void){
