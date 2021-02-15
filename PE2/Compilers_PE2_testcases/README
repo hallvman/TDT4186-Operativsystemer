@@ -1,9 +1,0 @@
-Test cases for TDT4205 assignment 1, question 1.4 a/b
-
-Run your solution for part a of the question on test_a[1-5].txt 
-and the solution for part b of the question on test_B[1-5].txt, accordingly.
-
-You can run the cases in a shell loop like this (adjust the path to your lexer):
-
-$ for i in test_a*.txt; do ./compilers-p1 < $i; done
-
