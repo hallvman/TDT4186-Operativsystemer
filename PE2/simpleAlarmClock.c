@@ -2,9 +2,9 @@
 #include <stdio.h> 
  
 int main(){
-	
+	int t;
+
 	while(1){
-		int t;
 		printf("Enter number:\n");
 		scanf("%d", &t);
 
