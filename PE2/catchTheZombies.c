@@ -24,8 +24,8 @@ int main(){
 		}
         if (pid == 0){
             sleep(t);
-            printf("\nDeceased child: %d\n", getpid());
             printf("\nRING! Time: %d Child ID: %d\n", t, getpid());
+            printf("\nDeceased child: %d\n", getpid());
             exit(0);
         }
     }
