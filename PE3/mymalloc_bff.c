@@ -29,7 +29,7 @@ void mymalloc_init() {
   // allocate and initialize our memory control block 
   // for the first (and at the moment only) free block
   struct mem_control_block *m = (struct mem_control_block *)managed_memory_start;
-  m->size = MEM_SIZE - sizeof(struct mem_control_block);
+  m->size = MEM_SIZE - sizeof(struct mem_control_block); //sizeof mem_control_block er 16
 
   // no next free block
   m->next = (struct mem_control_block *)0;
@@ -45,9 +45,35 @@ void *mymalloc(long numbytes) {
   if (has_initialized == 0) {
      mymalloc_init();
   }
+  struct mem_control_block *p = free_list_start;
+  struct mem_control_block *q = NULL;
+  void *addr;
+  
+  //Check if there is 8 free bytes on the end
+  long allocated_size = numbytes;
+  while (allocated_size % 8) {
+    allocated_size++;
+  }
 
-  /* add your code here! */
+  allocated_size += sizeof(struct mem_control_block);
 
+  //Find a block with enough space for p
+  while (p->size < allocated_size) {
+    p = p->next;
+    if (p == NULL) 
+      return NULL;
+  }
+
+  //Pointer to the 
+  addr = (void *)p;
+
+  if ((p->size - allocated_size) - sizeof(struct mem_control_block)) {
+    printf("Need to split block");
+  }
+  else {
+    printf("No need for split");
+  }
+  
 }
 
 void myfree(void *firstbyte) {
@@ -58,6 +84,14 @@ void myfree(void *firstbyte) {
 
 int main(int argc, char **argv) {
 
-  /* add your test cases here! */
+  void *p;
+  p = mymalloc(42); // allocate 42 bytes
+
+  if (p != (void *)0) {
+    // do something
+    myfree(p); // release memory again
+  } else {
+    printf("mymalloc failed!\n");
+  }
 
 }
