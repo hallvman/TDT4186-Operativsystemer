@@ -15,7 +15,6 @@ void *managed_memory_start;
 // this block is stored at the start of each free and used block
 struct mem_control_block {
   int size;
-  int isFree;
   struct mem_control_block *next;
 };
 
@@ -40,6 +39,33 @@ void mymalloc_init() {
 
   // We're initialized and ready to go
   has_initialized = 1;
+}
+
+// Split function for the split of a memory allocation
+void split(struct mem_control_block *slot, int size){
+  struct mem_control_block *new=(void*)((void*)slot+size+sizeof(struct mem_control_block));
+  new->size=(slot->size)-size-sizeof(struct mem_control_block);
+  new->next=slot->next;
+  slot->size=size;
+  slot->next=new;
+}
+
+// Helping function to merge the blocks together
+void mergeBlocks(){
+  struct mem_control_block *curr, *prev;
+  curr = free_list_start;
+  while ((curr->next) != NULL)
+  {
+    if ((curr == NULL) && (curr->next) == NULL)
+    {
+      curr->size+=(curr->next->size)+sizeof(struct mem_control_block);
+      curr->next=curr->next->next;
+    } else {
+      prev=curr;
+      curr=curr->next;
+    }
+  }
+  
 }
 
 void *mymalloc(long numbytes) {
@@ -70,9 +96,8 @@ void *mymalloc(long numbytes) {
 
   /* Found fitting block and split the rest */
   else if((curr->size)>(numbytes + sizeof(struct mem_control_block))){
-    curr->size -= (numbytes + sizeof(struct mem_control_block));
-    curr += curr->size;
-    curr->size = (numbytes + sizeof(struct mem_control_block));
+    printf("Block needs a split\n%p\n", curr);
+    split(curr, numbytes);
     result=(void*)(++curr);
     printf("Fitting block allocated\n");
     return result;
@@ -88,21 +113,29 @@ void *mymalloc(long numbytes) {
 
 void myfree(void *firstbyte) {
 
-  /* add your code here! */
-  struct mem_control_block *prev, *curr;
-  curr=free_list_start;
+  struct mem_control_block *curr = firstbyte;
 
-  if (firstbyte==NULL)
+  /* Checks if empty */
+  if (firstbyte != NULL)
   {
-    printf("Pointer is null, so nothing is checked\n");
-    return;
+    curr -= 1;
+    mergeBlocks();
+  } else {
+    printf("Invalid pointer\n");
   }
-  
-  
 }
 
 int main(int argc, char **argv) {
 
-  /* add your test cases here! */
-  
+  // Write printf's to test the code 
+  printf("Entering mymalloc\n");
+  void *p = mymalloc(42);
+  // printf("If this is the last message printed is does not enter the if or myfree()\n");
+  if (p != (void *)0)
+  {
+    printf("The if in main is true\n");
+    myfree(p);
+  } else{
+    printf("Mymalloc failed\n");
+  }
 }
