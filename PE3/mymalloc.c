@@ -52,6 +52,7 @@ void *mymalloc(long numbytes) {
   struct mem_control_block *prev, *curr;
   void *result;
   curr=free_list_start;
+
   while (((curr->size)<numbytes)&&(curr->next!=NULL))
   {
     prev=curr;
@@ -69,9 +70,9 @@ void *mymalloc(long numbytes) {
 
   /* Found fitting block and split the rest */
   else if((curr->size)>(numbytes + sizeof(struct mem_control_block))){
-    curr->size -= free_list_start;
+    curr->size -= (numbytes + sizeof(struct mem_control_block));
     curr += curr->size;
-    curr->size = free_list_start;
+    curr->size = (numbytes + sizeof(struct mem_control_block));
     result=(void*)(++curr);
     printf("Fitting block allocated\n");
     return result;
@@ -83,8 +84,6 @@ void *mymalloc(long numbytes) {
     printf("Sorry. No sufficient memory to allocate\n");
     return result;
  }
-
-
 }
 
 void myfree(void *firstbyte) {
@@ -105,13 +104,5 @@ void myfree(void *firstbyte) {
 int main(int argc, char **argv) {
 
   /* add your test cases here! */
-  void *p;
-  p = mymalloc(42); // allocate 42 bytes
-
-  if (p != (void *)0) {
-    // do something
-    myfree(p); // release memory again
-  } else {
-    printf("mymalloc failed!\n");
-  }
+  
 }
