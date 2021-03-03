@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +16,6 @@ void *managed_memory_start;
 // this block is stored at the start of each free and used block
 struct mem_control_block {
   int size;
-  int isFree;
   struct mem_control_block *next;
 };
 
@@ -31,7 +31,6 @@ void mymalloc_init() {
   // for the first (and at the moment only) free block
   struct mem_control_block *m = (struct mem_control_block *)managed_memory_start;
   m->size = MEM_SIZE - sizeof(struct mem_control_block);
-  m->isFree=0;
 
   // no next free block
   m->next = (struct mem_control_block *)0;
@@ -82,7 +81,36 @@ void *mymalloc(long numbytes) {
 
 void myfree(void *firstbyte) {
 
-  /* add your code here! */
+  struct mem_control_block* free = (struct mem_control_block*) firstbyte;
+  struct mem_control_block* control = free_list_start;
+  
+  //If firstbyte is NULL
+  if (firstbyte == NULL) {
+    return;
+  }
+
+  //If the first
+  if (free_list_start == NULL) {
+    free_list_start = free;
+    free_list_start->next = NULL;
+  }
+  else if (free_list_start > free){
+    free->size += control->size;
+    free->next = control->next;
+    free_list_start = free;
+  }
+  else if (free_list_start < free) {
+    while (control->next != free->next) {
+      control = control->next;
+    }
+    if (control->next == free->next) {
+        control->size += free->size;
+    }
+    else {
+    return;
+    }
+  }
+
   
 }
 
