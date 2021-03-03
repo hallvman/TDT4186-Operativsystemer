@@ -31,7 +31,6 @@ void mymalloc_init() {
   // for the first (and at the moment only) free block
   struct mem_control_block *m = (struct mem_control_block *)managed_memory_start;
   m->size = MEM_SIZE - sizeof(struct mem_control_block);
-  m->isFree=0;
 
   // no next free block
   m->next = (struct mem_control_block *)0;
@@ -44,59 +43,68 @@ void mymalloc_init() {
 }
 
 void *mymalloc(long numbytes) {
-  /* Initialize the memory */
   if (has_initialized == 0) {
      mymalloc_init();
   }
 
-  /* Metadata block pointer to traverse the free list */
+  /* add your code here! */
+
   struct mem_control_block *prev, *curr;
   void *result;
-  curr = free_list_start;
-
-  while ((((curr -> size) < numbytes)||((curr->isFree)==0)) && ((curr -> next) != NULL)){
-    prev = curr;
+  curr=free_list_start;
+  while (((curr->size)<numbytes)&&(curr->next!=NULL))
+  {
+    prev=curr;
     curr=curr->next;
     printf("One block checked\n");
   }
 
-  /*
+  /* found memory that exactly fits */
 
-  */
-  if ((curr->size) == numbytes)
+  if ((curr->size)==numbytes)
   {
-    curr->isFree=0;
     result=(void*)(++curr);
-    printf("Exact fitting block allocated\n");
-  return result;
+    printf("Exactly block allocated\n");
   }
 
-  /* 
-
-  */
-  else if((curr->size)>(numbytes+sizeof(struct mem_control_block))){
-    result = (void*)(++curr);
-    printf("Fitting block allocated with a split\n");
-  return result;
+  /* Found fitting block and split the rest */
+  else if((curr->size)>(numbytes + sizeof(struct mem_control_block))){
+    curr->size -= free_list_start;
+    curr += curr->size;
+    curr->size = free_list_start;
+    result=(void*)(++curr);
+    printf("Fitting block allocated\n");
+    return result;
   }
 
-  /* 
-    Else if there is not any memory to allocate 
-  */
-  else {
-    result = NULL;
-    printf("Sorry, no sufficient memory to allocate\n");
-  }
+  /* Not enough space */
+  else{
+    result=NULL;
+    printf("Sorry. No sufficient memory to allocate\n");
+    return result;
+ }
+
+
 }
 
 void myfree(void *firstbyte) {
 
   /* add your code here! */
+  struct mem_control_block *prev, *curr;
+  curr=free_list_start;
+
+  if (firstbyte==NULL)
+  {
+    printf("Pointer is null, so nothing is checked\n");
+    return;
+  }
+  
   
 }
 
 int main(int argc, char **argv) {
 
+  /* add your test cases here! */
   void *p;
   p = mymalloc(42); // allocate 42 bytes
 
@@ -106,5 +114,4 @@ int main(int argc, char **argv) {
   } else {
     printf("mymalloc failed!\n");
   }
-
 }
