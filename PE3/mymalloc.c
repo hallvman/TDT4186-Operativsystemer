@@ -30,12 +30,8 @@ void mymalloc_init() {
   // allocate and initialize our memory control block 
   // for the first (and at the moment only) free block
   struct mem_control_block *m = (struct mem_control_block *)managed_memory_start;
-<<<<<<< HEAD:PE3/mymalloc_bff.c
-  m->size = MEM_SIZE - sizeof(struct mem_control_block); //sizeof mem_control_block er 16
-=======
   m->size = MEM_SIZE - sizeof(struct mem_control_block);
   m->isFree=0;
->>>>>>> 79dfd6dd4779b835001ad034163c47184ecdafc0:PE3/mymalloc.c
 
   // no next free block
   m->next = (struct mem_control_block *)0;
@@ -52,38 +48,7 @@ void *mymalloc(long numbytes) {
   if (has_initialized == 0) {
      mymalloc_init();
   }
-  struct mem_control_block *p = free_list_start;
-  struct mem_control_block *q = NULL;
-  void *addr;
-  
-  //Check if there is 8 free bytes on the end
-  long allocated_size = numbytes;
-  while (allocated_size % 8) {
-    allocated_size++;
-  }
 
-  allocated_size += sizeof(struct mem_control_block);
-
-  //Find a block with enough space for p
-  while (p->size < allocated_size) {
-    q = p;
-    p = p->next;
-    if (p == NULL) 
-      return NULL;
-  }
-
-  //Pointer to the 
-  addr = (void *)p;
-
-<<<<<<< HEAD:PE3/mymalloc_bff.c
-  if ((p->size - allocated_size) - sizeof(struct mem_control_block)) {
-    printf("Need to split block");
-  }
-  else {
-    printf("No need for split");
-  }
-  
-=======
   /* Metadata block pointer to traverse the free list */
   struct mem_control_block *prev, *curr;
   void *result;
@@ -122,7 +87,6 @@ void *mymalloc(long numbytes) {
     result = NULL;
     printf("Sorry, no sufficient memory to allocate\n");
   }
->>>>>>> 79dfd6dd4779b835001ad034163c47184ecdafc0:PE3/mymalloc.c
 }
 
 void myfree(void *firstbyte) {
