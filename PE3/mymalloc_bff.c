@@ -30,12 +30,8 @@ void mymalloc_init() {
   // allocate and initialize our memory control block 
   // for the first (and at the moment only) free block
   struct mem_control_block *m = (struct mem_control_block *)managed_memory_start;
-<<<<<<< HEAD:PE3/mymalloc_bff.c
-  m->size = MEM_SIZE - sizeof(struct mem_control_block); //sizeof mem_control_block er 16
-=======
   m->size = MEM_SIZE - sizeof(struct mem_control_block);
   m->isFree=0;
->>>>>>> 79dfd6dd4779b835001ad034163c47184ecdafc0:PE3/mymalloc.c
 
   // no next free block
   m->next = (struct mem_control_block *)0;
@@ -75,7 +71,6 @@ void *mymalloc(long numbytes) {
   //Pointer to the 
   addr = (void *)p;
 
-<<<<<<< HEAD:PE3/mymalloc_bff.c
   if ((p->size - allocated_size) - sizeof(struct mem_control_block)) {
     printf("Need to split block");
   }
@@ -83,46 +78,6 @@ void *mymalloc(long numbytes) {
     printf("No need for split");
   }
   
-=======
-  /* Metadata block pointer to traverse the free list */
-  struct mem_control_block *prev, *curr;
-  void *result;
-  curr = free_list_start;
-
-  while ((((curr -> size) < numbytes)||((curr->isFree)==0)) && ((curr -> next) != NULL)){
-    prev = curr;
-    curr=curr->next;
-    printf("One block checked\n");
-  }
-
-  /*
-
-  */
-  if ((curr->size) == numbytes)
-  {
-    curr->isFree=0;
-    result=(void*)(++curr);
-    printf("Exact fitting block allocated\n");
-  return result;
-  }
-
-  /* 
-
-  */
-  else if((curr->size)>(numbytes+sizeof(struct mem_control_block))){
-    result = (void*)(++curr);
-    printf("Fitting block allocated with a split\n");
-  return result;
-  }
-
-  /* 
-    Else if there is not any memory to allocate 
-  */
-  else {
-    result = NULL;
-    printf("Sorry, no sufficient memory to allocate\n");
-  }
->>>>>>> 79dfd6dd4779b835001ad034163c47184ecdafc0:PE3/mymalloc.c
 }
 
 void myfree(void *firstbyte) {
