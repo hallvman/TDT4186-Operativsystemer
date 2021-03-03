@@ -115,7 +115,7 @@ void myfree(void *firstbyte) {
 
   struct mem_control_block *curr = firstbyte;
 
-  /* Checks if empty */
+  /* Checks if not empty */
   if (firstbyte != NULL)
   {
     curr -= 1;
