@@ -15,6 +15,7 @@ void *managed_memory_start;
 // this block is stored at the start of each free and used block
 struct mem_control_block {
   int size;
+  int isFree;
   struct mem_control_block *next;
 };
 
@@ -33,6 +34,7 @@ void mymalloc_init() {
 
   // no next free block
   m->next = (struct mem_control_block *)0;
+  m->isFree=1;
 
   // initialize the start of the free list
   free_list_start = m;
@@ -46,7 +48,9 @@ void split(struct mem_control_block *slot, int size){
   struct mem_control_block *new=(void*)((void*)slot+size+sizeof(struct mem_control_block));
   new->size=(slot->size)-size-sizeof(struct mem_control_block);
   new->next=slot->next;
+  new->isFree=1;
   slot->size=size;
+  slot->isFree=0;
   slot->next=new;
 }
 
@@ -56,7 +60,7 @@ void mergeBlocks(){
   curr = free_list_start;
   while ((curr->next) != NULL)
   {
-    if ((curr == NULL) && (curr->next) == NULL)
+    if ((curr->isFree) && (curr->next->isFree))
     {
       curr->size+=(curr->next->size)+sizeof(struct mem_control_block);
       curr->next=curr->next->next;
@@ -90,6 +94,7 @@ void *mymalloc(long numbytes) {
 
   if ((curr->size)==numbytes)
   {
+    curr->isFree=0;
     result=(void*)(++curr);
     printf("Exactly block allocated\n");
   }
@@ -119,6 +124,7 @@ void myfree(void *firstbyte) {
   if (firstbyte != NULL)
   {
     curr -= 1;
+    curr->isFree=1;
     mergeBlocks();
   } else {
     printf("Invalid pointer\n");
@@ -127,6 +133,8 @@ void myfree(void *firstbyte) {
 
 int main(int argc, char **argv) {
 
+  /* Code for testing during programming */
+  /*
   // Write printf's to test the code 
   printf("Entering mymalloc\n");
   void *p = mymalloc(42);
@@ -138,4 +146,6 @@ int main(int argc, char **argv) {
   } else{
     printf("Mymalloc failed\n");
   }
+  */
+
 }
