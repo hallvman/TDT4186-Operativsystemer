@@ -34,8 +34,6 @@ int main(int argc, char **argv){
 void loop(void){
 
     char *line;
-    //char **args;
-    //int status;
 
     do
     {
@@ -43,10 +41,7 @@ void loop(void){
         printf("€ ");
         line = readLine();
         
-
-        //free(line);
-        //free(args);
     } while (1);
-    
+
 }
 
