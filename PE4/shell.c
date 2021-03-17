@@ -62,18 +62,26 @@ char **splitLine(char *line){
     return tokens;
 }
 
+
 int executeLine(char **tokens){
-
-    pid_t pid;
-    int status;
-
-    if (tokens[0] == NULL)
-    {
-        printf("ERROR: Invalid commando");
-        return 1;
-    }
-
     
+    pid_t  pid;
+    int    status;
+
+    if ((pid = fork()) < 0) {     /* fork a child process           */
+        printf("*** ERROR: forking child process failed\n");
+        exit(1);
+    }
+    else if (pid == 0) {          /* for the child process:         */
+        if (execvp(*tokens, tokens) < 0) {     /* execute the command  */
+            printf("*** ERROR: exec failed\n");
+            exit(1);
+        }
+    }
+    else {                                  /* for the parent:      */
+        while (wait(&status) != pid)       /* wait for completion  */
+            ;
+    }
 }
 
 int main(int argc, char **argv){
@@ -85,7 +93,7 @@ int main(int argc, char **argv){
 
     do
     {
-        printf("€ ");
+        printf("$ ");
         line = readLine();
         tokens = splitLine(line);
         status = executeLine(tokens);
