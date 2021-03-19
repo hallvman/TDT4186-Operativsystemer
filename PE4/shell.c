@@ -59,6 +59,7 @@ char **splitLine(char *line){
     return tokens;
 }
 
+// Processing each step of the line
 int processString(char **tokens){
     pid_t  pid;
     int    status;
@@ -100,17 +101,24 @@ int exitCMD(char **tokens){
     return 0;
 }
 
+int bashCMD(char **tokens){
+    int status = system(tokens[1]);
+}
+
 // Points to the functions
 int (*functions[]) (char **) = {
     &exitCMD,
-    &cd
+    &cd,
+    &bashCMD
 };
 
+// Execution function for the commands
 int executeLine(char **tokens){
     int i;
     char* listOfCmds[2] = {
         "exit",
         "cd"
+        "bash"
     };
 
     if(tokens[0] == NULL)
@@ -119,7 +127,7 @@ int executeLine(char **tokens){
         return 1;
     }
     
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < 3; i++)
     {
         if(strcmp(tokens[0], listOfCmds[i]) == 0){
             return (*functions[i])(tokens);
