@@ -51,37 +51,82 @@ char **splitLine(char *line){
                 printf("Error");
                 exit(EXIT_FAILURE);
             }
-
         }
-        token = strtok(NULL, TOKEN_DELIM);  
-        
-
+        token = strtok(NULL, TOKEN_DELIM);      
     }
     
     tokens[position] = NULL;
     return tokens;
 }
 
-
-int executeLine(char **tokens){
-    
+int processString(char **tokens){
     pid_t  pid;
     int    status;
 
-    if ((pid = fork()) < 0) {     /* fork a child process           */
+    // child process 
+    if ((pid = fork()) < 0) {             
         printf("*** ERROR: forking child process failed\n");
         exit(1);
     }
-    else if (pid == 0) {          /* for the child process:         */
-        if (execvp(*tokens, tokens) < 0) {     /* execute the command  */
+    //for the child process:
+    else if (pid == 0) {               
+        // Execute
+        if (execvp(*tokens, tokens) < 0) {   
             printf("*** ERROR: exec failed\n");
             exit(1);
         }
     }
-    else {                                  /* for the parent:      */
-        while (wait(&status) != pid)       /* wait for completion  */
+    // Parent
+    else {                                  
+        while (wait(&status) != pid)     
             ;
     }
+
+    return 1;
+}
+
+
+// Command to change directory
+int cd(char **tokens){
+    if (chdir(tokens[1]) != 0)
+    {
+        perror("chdir");
+    }
+    return 1;
+}
+
+// Command to exit
+int exitCMD(char **tokens){
+    return 0;
+}
+
+// Points to the functions
+int (*functions[]) (char **) = {
+    &exitCMD,
+    &cd
+};
+
+int executeLine(char **tokens){
+    int i;
+    char* listOfCmds[2] = {
+        "exit",
+        "cd"
+    };
+
+    if(tokens[0] == NULL)
+    {
+        printf("Empty command: try again\n");
+        return 1;
+    }
+    
+    for (i = 0; i < 2; i++)
+    {
+        if(strcmp(tokens[0], listOfCmds[i]) == 0){
+            return (*functions[i])(tokens);
+        }
+    }
+    
+    return processString(tokens);
 }
 
 int main(int argc, char **argv){
@@ -94,8 +139,11 @@ int main(int argc, char **argv){
     do
     {
         printf("$ ");
+        // Reads the line
         line = readLine();
+        // Splits the line
         tokens = splitLine(line);
+        // Execute the line
         status = executeLine(tokens);
         
         // Terminates for memory
