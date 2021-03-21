@@ -1,8 +1,9 @@
 #include <sys/wait.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>      /* open() */
+#include <unistd.h>     /* execlp(), fork(), dup2() */
 
 #define TOKEN_BUFSIZE 64
 #define TOKEN_DELIM " \t\r\n\a"
@@ -63,7 +64,33 @@ char **splitLine(char *line){
 int processString(char **tokens){
     pid_t  pid;
     int    status;
+    int tok = 1;
+    
+    while (tokens[tok] != NULL) {
+        if (strcmp(tokens[tok], ">") == 0) {
+            close(1); 
+            int out = dup(open(tokens[tok+1], STDOUT_FILENO)); 
+            // Child process
+            if (fork() == 0) {
+                execlp(tokens[0], tokens[0], NULL); 
+            }
+            close(out); // Release out
+        }
 
+        if (strcmp(tokens[tok], "<") == 0) {
+            close(0);
+            int in = dup(open(tokens[tok+1], STDIN_FILENO));
+
+            if (fork() == 0) {
+                execlp(tokens[0], tokens[0], NULL);
+            }
+            close(in); // Release in
+        }
+        tok++;
+        
+    }
+
+    
     // child process 
     if ((pid = fork()) < 0) {             
         printf("*** ERROR: forking child process failed\n");
@@ -105,6 +132,13 @@ int exitCMD(char **tokens){
 int bashCMD(char **tokens){
     int status = system(tokens[1]);
 }
+
+/*
+int outputCMD(char **tokens) {
+    int fd = open(tokens[2],O_RDONLY);
+
+}
+*/
 
 // Points to the functions
 int (*functions[]) (char **) = {
