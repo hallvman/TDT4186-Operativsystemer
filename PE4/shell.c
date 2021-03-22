@@ -86,9 +86,9 @@ int processString(char **tokens){
             }
             close(in); // Release in
         }
-        tok++;
-        
+        tok++;    
     }
+    
 
     
     // child process 
@@ -132,13 +132,6 @@ int exitCMD(char **tokens){
 int bashCMD(char **tokens){
     int status = system(tokens[1]);
 }
-
-/*
-int outputCMD(char **tokens) {
-    int fd = open(tokens[2],O_RDONLY);
-
-}
-*/
 
 // Points to the functions
 int (*functions[]) (char **) = {

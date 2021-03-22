@@ -3,6 +3,5 @@ myScript.sh
 OS_PE4.pdf
 shell.c
 shell.out
-test.txt
 foobar.txt
-$ 
+$
