@@ -27,7 +27,19 @@ int main(void) {
   return EXIT_SUCCESS;
 }
 
+
+
+
 //Pipe example from the pipe() man page in Linux
+
+/*
+EXAMPLES
+   Using a Pipe to Pass Data Between a Parent Process and a Child Process
+       The following example demonstrates the use of a pipe to transfer data between a parent process and a child process. Error  handling  is  excluded,
+       but  otherwise  this code demonstrates good practice when using pipes: after the fork() the two processes close the unused ends of the pipe before
+       they commence transferring data.
+*/
+
 /*
 #include <stdlib.h>
 #include <unistd.h>
