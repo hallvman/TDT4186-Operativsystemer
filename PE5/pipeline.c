@@ -3,16 +3,20 @@
 #include <unistd.h>
  
  //PE5 
+
+void unmaned_pipe() {
+  
+}
+
 int main(void) {
-  int pipefds[2];
- 
-  if(pipe(pipefds) == -1) {
-    perror("pipe");
-    exit(EXIT_FAILURE);
+
+  int child_pipe[2];
+  int parent_pipe[2];
+
+  if (pipe(child_pipe) != 0 || pipe(parent_pipe) != 0) {
+    perror("Faild to create pipe one or more pipe");
   }
- 
-  printf("Read File Descriptor Value: %d\n", pipefds[0]);
-  printf("Write File Descriptor Value: %d\n", pipefds[1]);
- 
+  
+
   return EXIT_SUCCESS;
 }
