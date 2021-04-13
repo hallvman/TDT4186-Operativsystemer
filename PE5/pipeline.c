@@ -1,34 +1,56 @@
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <unistd.h>
+#include <string.h>
+#include <signal.h>
+
+
  
  //PE5 
 
-void unmaned_pipe() {
-  
-}
+int main(int argc, char *argv[]) {
+  int pipefd[2];
+  pid_t cpid;
+  char buf;
 
-int main(void) {
-
-  int child_pipe[2];
-  int parent_pipe[2];
-  pid_t pid;
-
-  if (pipe(child_pipe) == -1) {
-    perror("Faild to create child pipe");
+  if (argc != 2) {
+      fprintf(stderr, "Usage: %s <string>\n", argv[0]);
+      exit(EXIT_FAILURE);
   }
 
-  if (pipe(parent_pipe) == -1) {
-    perror("Faild to create parent pipe");
+  if (pipe(pipefd) == -1) {
+      perror("pipe");
+      exit(EXIT_FAILURE);
   }
 
+  cpid = fork();
 
-  return EXIT_SUCCESS;
+  switch (cpid) {
+    case -1:
+      perror("Faild to fork");
+      exit(EXIT_FAILURE);
+
+    case 0: // Child - reads from pipe 
+      close(pipefd[1]);          //Close unused write end 
+
+      while (read(pipefd[0], &buf, 1) > 0)
+          write(STDOUT_FILENO, &buf, 1);
+      write(STDOUT_FILENO, "\n", 1);
+      printf("%d\n", pipefd[0]);
+      close(pipefd[0]);
+      _exit(EXIT_SUCCESS);
+
+    default: // Parant - reads from pipe
+      close(pipefd[0]);          // Close unused read end 
+      write(pipefd[1], argv[1], strlen(argv[1]));
+      close(pipefd[1]);          // Reader will see EOF 
+      wait(NULL);                // Wait for child 
+      exit(EXIT_SUCCESS);
+    
+  }
 }
-
-
-
 
 //Pipe example from the pipe() man page in Linux
 
