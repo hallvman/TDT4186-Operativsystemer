@@ -7,7 +7,7 @@
  
  //PE5 
 
-// Boolean for alarm function
+// Boolean for handling functions
 int isAlarm = 0;
 int print = 0;
 
@@ -17,6 +17,7 @@ void signalHandler(int signum){
   isAlarm = 1;
 }
 
+// The Signal handler for SIGUSR1
 void usrHandler(int signum){
   print = 1;
 }
@@ -30,13 +31,13 @@ int main(int argc, char *argv[]) {
   // Bytes and file 
   int fd[2];
   long long nbytes, bytes = 0;
-  int count = 0;
 
   // The data for the write and read functions
   char *data = (char *)malloc(sizeof(char) * blockSize);
   free(data);
   char *buffer = (char *)malloc(sizeof(char) * blockSize);
 
+  // Make pipe
   pipe(fd);
 
   // Child Process
@@ -53,7 +54,10 @@ int main(int argc, char *argv[]) {
   else {
     close(fd[1]);
 
+    // SIGUSR1 signal
     signal(SIGUSR1, usrHandler);
+    
+    // SIGALRM signal
     signal(SIGALRM, signalHandler);
     alarm(1);
 
@@ -61,18 +65,16 @@ int main(int argc, char *argv[]) {
     while(1){
       // Reads of the given blocksize
       nbytes+=read(fd[0], buffer, blockSize);
-      count++;
       // Commented out for task b
       // printf("Bytes read: %d\n", nbytes);
       // This if wont be there for 5A, but is needed for 5B
       if(isAlarm == 1){
-        //printf("nbytes: %d\n", nbytes);
-        //printf("bytes: %d\n", bytes);
         printf("Bandwidth: %lld\n\n", nbytes-bytes);
         bytes = nbytes;
         isAlarm = 0;
       }
 
+      // The handler for SIGUSR1 gives 1 and reads the bytes
       if(print == 1){
         printf("Bytes read: %lld\n\n", nbytes);
         print = 0;
