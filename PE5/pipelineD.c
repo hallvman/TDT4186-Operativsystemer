@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h>
+#include <sys/stat.h>
 #include <signal.h>
- 
+#include <fcntl.h>
+#include <math.h>
+
  //PE5 
 
 // Boolean for handling functions
@@ -17,11 +19,6 @@ void signalHandler(int signum){
   isAlarm = 1;
 }
 
-// The Signal handler for SIGUSR1
-void usrHandler(int signum){
-  print = 1;
-}
-
 int main(int argc, char *argv[]) {
 
   // Converts the string from command line to an int
@@ -30,7 +27,7 @@ int main(int argc, char *argv[]) {
 
   // Bytes and file 
   int fd[2];
-  long long nbytes, bytes = 0;
+  size_t nbytes, bytes, rBytes = 0;
 
   // The data for the write and read functions
   char *data = (char *)malloc(sizeof(char) * blockSize);
@@ -38,12 +35,15 @@ int main(int argc, char *argv[]) {
   char *buffer = (char *)malloc(sizeof(char) * blockSize);
 
   // Make pipe
-  pipe(fd);
+  unlink("myFifo");
+  char * myFifo = "myFifo";
+  mkfifo(myFifo, 0666);
 
   // Child Process
   if (fork()==0) {
     close(fd[0]);
 
+    fd[1] = open(myFifo, O_WRONLY);
     // Writes data of the the given blocksize
     while(1){
       write(fd[1], data, blockSize);
@@ -53,33 +53,28 @@ int main(int argc, char *argv[]) {
   // Parent Process
   else {
     close(fd[1]);
-
-    // SIGUSR1 signal
-    signal(SIGUSR1, usrHandler);
     
     // SIGALRM signal
     signal(SIGALRM, signalHandler);
     alarm(1);
 
+    fd[0] = open(myFifo, O_RDONLY);
+
     printf("This is the parent pid id: %d\n", getpid());
-    while(1){
+    do{
       // Reads of the given blocksize
-      nbytes+=read(fd[0], buffer, blockSize);
+      nbytes += read(fd[0], buffer, blockSize);
+
       // Commented out for task b
       // printf("Bytes read: %d\n", nbytes);
       // This if wont be there for 5A, but is needed for 5B
+
       if(isAlarm == 1){
-        printf("Bandwidth: %lld\n\n", nbytes-bytes);
+        printf("Bandwidth: %.*f MB/s\n", 2, (nbytes - bytes) / pow(10, 6));
         bytes = nbytes;
         isAlarm = 0;
       }
-
-      // The handler for SIGUSR1 gives 1 and reads the bytes
-      if(print == 1){
-        printf("Bytes read: %lld\n\n", nbytes);
-        print = 0;
-      }
-    }
+    }while(nbytes >0);
   }
-  return EXIT_SUCCESS;
+  return(0);
 }

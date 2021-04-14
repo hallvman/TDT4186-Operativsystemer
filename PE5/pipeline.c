@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <math.h>
  
  //PE5 
 
@@ -30,7 +31,7 @@ int main(int argc, char *argv[]) {
 
   // Bytes and file 
   int fd[2];
-  long long nbytes, bytes = 0;
+  size_t nbytes, bytes = 0;
 
   // The data for the write and read functions
   char *data = (char *)malloc(sizeof(char) * blockSize);
@@ -61,26 +62,28 @@ int main(int argc, char *argv[]) {
     signal(SIGALRM, signalHandler);
     alarm(1);
 
+    // Get the parent pid for tast 5C
     printf("This is the parent pid id: %d\n", getpid());
     while(1){
       // Reads of the given blocksize
-      nbytes+=read(fd[0], buffer, blockSize);
-    
+      nbytes += read(fd[0], buffer, blockSize);
+
       // Commented out for task b
       // printf("Bytes read: %d\n", nbytes);
-      // This if wont be there for 5A, but is needed for 5B
+
+      // This if wont be there for 5A, but is needed for 5B and 5C
       if(isAlarm == 1){
-        printf("Bandwidth: %lld\n\n", nbytes-bytes);
+        printf("Bandwidth: %.*f MB/s\n", 2, (nbytes - bytes) / pow(10, 6));
         bytes = nbytes;
         isAlarm = 0;
       }
 
       // The handler for SIGUSR1 gives 1 and reads the bytes
       if(print == 1){
-        printf("Bytes read: %lld\n\n", nbytes);
+        printf("Bytes read: %ld\n\n", nbytes);
         print = 0;
       }
     }
   }
-  return EXIT_SUCCESS;
+  return(0);
 }
