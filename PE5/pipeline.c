@@ -7,13 +7,20 @@
  
  //PE5 
 
+int isAlarm = 0;
+
+void signalHandler(int signum){
+  alarm(1);
+  isAlarm = 1;
+}
+
 int main(int argc, char *argv[]) {
 
   char *a = argv[1];
   int blockSize = atoi(a);
 
   int fd[2];
-  int nbytes = 0;
+  int nbytes, bytes = 0;
   char *data = (char *)malloc(sizeof(char) * blockSize);
   free(data);
   char *buffer = (char *)malloc(sizeof(char) * blockSize);
@@ -33,10 +40,18 @@ int main(int argc, char *argv[]) {
   else {
     close(fd[1]);
 
-    do{
+    signal(SIGALRM, signalHandler);
+    alarm(1);
+
+    while(1){
       nbytes+=read(fd[0], buffer, blockSize);
-      printf("Bytes read: %d\n", nbytes);
-    }while(nbytes > 0);
+      //printf("Bytes read: %d\n", nbytes);
+      if(isAlarm == 1){
+        printf("Bandwidth: %d\n\n", nbytes-bytes);
+        bytes = nbytes;
+        isAlarm = 0;
+      }
+    }
   }
   return EXIT_SUCCESS;
 }
