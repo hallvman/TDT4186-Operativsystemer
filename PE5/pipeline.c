@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
       nbytes += read(fd[0], buffer, blockSize);
 
       // Commented out for task b
-      // printf("Bytes read: %d\n", nbytes);
+      // printf("Bytes read: %.*f MB\n", 2, nbytes / pow(10, 6));
 
       // This if wont be there for 5A, but is needed for 5B and 5C
       if(isAlarm == 1){
@@ -77,10 +77,10 @@ int main(int argc, char *argv[]) {
         bytes = nbytes;
         isAlarm = 0;
       }
-
+      
       // The handler for SIGUSR1 gives 1 and reads the bytes
       if(print == 1){
-        printf("Bytes read: %ld\n\n", nbytes);
+        printf("Bytes read: %.*f MB\n", 2, nbytes / pow(10, 6));
         print = 0;
       }
     }
