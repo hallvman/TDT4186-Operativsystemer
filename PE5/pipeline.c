@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 
   // Converts the string from command line to an int
   char *a = argv[1];
-  int blockSize = atoi(a);
+  size_t blockSize = atoi(a);
 
   // Bytes and file 
   int fd[2];
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
     signal(SIGALRM, signalHandler);
     alarm(1);
 
-    // Get the parent pid for tast 5C
+    // Get the parent pid for task 5C
     printf("This is the parent pid id: %d\n", getpid());
     while(1){
       // Reads of the given blocksize

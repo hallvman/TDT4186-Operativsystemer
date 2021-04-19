@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 
   // Converts the string from command line to an int
   char *a = argv[1];
-  int blockSize = atoi(a);
+  size_t blockSize = atoi(a);
 
   // Bytes and file 
   int fd[2];
