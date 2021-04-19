@@ -7,6 +7,20 @@
 #include <math.h>
  
  //PE5 
+ /*Questions 
+ best bandwith on 10000 
+ 
+• What is the largest block size supported on your system?
+  134 472
+
+
+• What is the highest bandwidth you can achieve and at which block size is this bandwidth achieved?
+  1745,92 MB/s
+
+• Does the bandwidth change when you start several instances of your program at the same time?
+  Yes, its not the same for each iteration
+ */
+
 
 // Boolean for handling functions
 int isAlarm = 0;

@@ -9,6 +9,20 @@
 
  //PE5 
 
+  /*Questions 
+  best bandwith on 10000 
+
+• What is the largest block size supported on your system?
+  134472
+
+• What is the highest bandwidth you can achieve and at which block size is this bandwidth achieved?
+  2100.84 MB/s 
+
+• Does the bandwidth change when you start several instances of your program at the same time?
+  The bandwith is reduced when serveral instances is running at the same time.
+
+ */
+
 // Boolean for handling functions
 int isAlarm = 0;
 int print = 0;
