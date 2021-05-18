@@ -69,12 +69,12 @@ void mergeBlocks(){
       curr=curr->next;
     }
   }
-  
 }
 
 void *mymalloc(long numbytes) {
   if (has_initialized == 0) {
      mymalloc_init();
+     printf("Memory initialized\n");
   }
 
   /* add your code here! */
@@ -83,7 +83,7 @@ void *mymalloc(long numbytes) {
   void *result;
   curr=free_list_start;
 
-  while (((curr->size)<numbytes)&&(curr->next!=NULL))
+  while ((((curr->size)<numbytes)||((curr->isFree)=0))&&(curr->next!=NULL))
   {
     prev=curr;
     curr=curr->next;
@@ -97,11 +97,11 @@ void *mymalloc(long numbytes) {
     curr->isFree=0;
     result=(void*)(++curr);
     printf("Exactly block allocated\n");
+    return result;
   }
 
   /* Found fitting block and split the rest */
   else if((curr->size)>(numbytes + sizeof(struct mem_control_block))){
-    printf("Block needs a split\n%p\n", curr);
     split(curr, numbytes);
     result=(void*)(++curr);
     printf("Fitting block allocated\n");
@@ -131,6 +131,14 @@ void myfree(void *firstbyte) {
   }
 }
 
+// Function for testing purposes
+void printlist(struct mem_control_block* block){
+    while (block != NULL) {
+        printf("Blocksize: %d, and poiting: %p. Memory: %p \n", block->size, block->next, block);
+        block = block->next;
+    }
+}
+
 int main(int argc, char **argv) {
 
   /* Code for testing during programming */
@@ -138,7 +146,7 @@ int main(int argc, char **argv) {
   // Write printf's to test the code 
   printf("Entering mymalloc\n");
   void *p = mymalloc(42);
-  // printf("If this is the last message printed is does not enter the if or myfree()\n");
+  printf("If this is the last message printed is does not enter the if or myfree()\n");
   if (p != (void *)0)
   {
     printf("The if in main is true\n");
@@ -147,5 +155,30 @@ int main(int argc, char **argv) {
     printf("Mymalloc failed\n");
   }
   */
+
+  // Should not print because of no initialization
+  printlist(free_list_start);
+  printf("----------------Start------------------\n");
+
+  void *k = mymalloc(66);
+  printlist(free_list_start);
+  myfree(k);
+  printf("\n");
+
+  void *l = mymalloc(42);
+  printlist(free_list_start);
+  myfree(l);
+  printf("\n");
+
+  void *m = mymalloc(72);
+  printlist(free_list_start);
+  myfree(m);
+  printf("\n");
+
+  void *n = mymalloc(128);
+  printlist(free_list_start);
+  myfree(n);
+
+  printf("----------------Slutt------------------\n");
 
 }
